@@ -1,4 +1,4 @@
-#Schedule every half hour
+#Schedule every half hour using pythonanywhere
 
 # get json data from https://www.nba2k.io/nba-2k20-locker-codes/
 # get first locker code
@@ -9,9 +9,14 @@
 
 import requests
 import json
-import math
 
 print "beginning of script"
+
+class LockerCode:
+  def __init__(self, lockerCode, expiration):
+    self.lockerCode = lockerCode
+    self.expiration = expiration
+
 currentLockerCodeAmount = 124
 
 url = "https://www.nba2k.io/page-data/nba-2k20-locker-codes/page-data.json"
@@ -28,11 +33,29 @@ lockerCodesJsonLength = len(lockerCodesJson)
 print("NUMBER OF LOCKER CODES")
 print (lockerCodesJsonLength)
 
-if lockerCodesJsonLength > currentLockerCodeAmount:
-	# set currentLockerCodeAmount to lockerCodesJsonLength
+if lockerCodesJsonLength > currentLockerCodeAmount: #126 vs 124 -> 2
 	# send text to phone numbers with locker codes, time limits (check exp date first)
+	allNewLockerCodes = []
+	numNewLockerCodes = lockerCodesJsonLength - currentLockerCodeAmount;
+	index = 0;
+
+	while numNewLockerCodes > 0:
+		newLockerCodeJson = lockerCodesJson[index]["node"]
+		newLockerCode = LockerCode(newLockerCodeJson["lockerCode"], newLockerCodeJson["expiration"])
+		allNewLockerCodes.append(newLockerCode)
+		index+=1
+		numNewLockerCodes-=1
+
+	#for code in allNewLockerCodes:
+		#print(code.lockerCode)
+
+	
+	# set currentLockerCodeAmount ENVIRONMENT VARIABLE to lockerCodesJsonLength, increment index, decrement numNewLockerCodes
+	currentLockerCodeAmount = lockerCodesJsonLength
+
 else:
 	# end script w/ no changes
+	print "end of script"
 
 
 #print(json.dumps(lockerCodesJson))

@@ -10,6 +10,13 @@ class LockerCode:
     self.lockerCode = lockerCode
     self.expiration = expiration
 
+def formatDate(date):
+	formattedExpirationString = date.replace("T", " ")[:-9]
+
+	formattedExpiry = datetime.strptime(formattedExpirationString, '%Y-%m-%d %H:%M')
+
+	return formattedExpiry
+
 
 def getNewLockerCodes():
 	totalNumLockerCodesFile = open("totalNumLockerCodes.txt","r+")
@@ -31,8 +38,12 @@ def getNewLockerCodes():
 		while numNewLockerCodes > 0:
 			newLockerCodeJson = lockerCodesJson[index]["node"]
 			newLockerCode = LockerCode(newLockerCodeJson["lockerCode"], newLockerCodeJson["expiration"])
-			# if newLockerCode.expiration > datetime.now(): DONT INCLUDE LOCKER CODES THAT HAVE ALREADY EXPIRED
-			allNewLockerCodes.append(newLockerCode)
+
+			# eg. 2020-06-27T07:00:30-07:00
+			formattedExpiry = formatDate(newLockerCode.expiration)
+			
+			if formattedExpiry > datetime.now():
+				allNewLockerCodes.append(newLockerCode)
 			index+=1
 			numNewLockerCodes-=1
 
@@ -49,10 +60,12 @@ def getNewLockerCodes():
 
 
 def createText(lockerCodeArray):
-	text = "New locker codes available: \n"
+	text = "New locker codes available: \n \n"
 
 	for code in lockerCodeArray:
-		text += code.lockerCode + " expires " + code.expiration + "\n \n"
+		formattedExpiry = formatDate(code.expiration).strftime('%B %d,%Y at %I:%M%p')
+
+		text += code.lockerCode + " expires on " + formattedExpiry + "\n \n"
 
 	return text
 
@@ -67,12 +80,12 @@ def send_lockercode_sms():
     	text = createText(newLockerCodes)
     	print(text)
 
-    	# for phoneNumber in my_phone_numbers:
+    	for phoneNumber in my_phone_numbers:
 
-	    # 	client.messages.create(
-	    #         from_=my_twilio_number,
-	    #         to=phoneNumber,
-	    #         body=text)
+	    	client.messages.create(
+	            from_=my_twilio_number,
+	            to=phoneNumber,
+	            body=text)
     else:
     	print "No new locker codes"
     	

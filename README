@@ -1,0 +1,5 @@
+This program was created to notify my friends and I whenever nba2k released new locker codes at https://www.nba2k.io/nba-2k20-locker-codes/. 
+These locker codes are only available for a certain window of time, ranging from an about an hour to a week and can be used in game to win prizes, such as player packs.
+
+This script has been scheduled to run every hour (20 minutes past the hour) using pythonanywhere.com. 
+If new locker codes have been released, they will be texted to my friends and I.
